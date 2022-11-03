@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_application_test/Screen/registerScreen.dart';
-import 'package:flutter_application_test/Screen/resetScreen.dart';
+import 'package:flutter_application_test/Screen-login/registerScreen.dart';
+import 'package:flutter_application_test/Screen-login/resetScreen.dart';
 import 'package:flutter_application_test/homePage.dart';
+import '../Screen-profile/Profile_Page.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
       )
           .then((value) {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return HomePage();
+          return ProfilePage();
         }));
       });
     } on FirebaseAuthException catch (e) {

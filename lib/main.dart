@@ -2,8 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'HomePage.dart';
-import 'Screen/registerScreen.dart';
-import 'LoginPage.dart';
+import 'Screen-profile/ProfilePage.dart';
+import 'Screen-login/LoginPage.dart';
+import 'Screen-login/registerScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+          primaryColor: Color.fromARGB(255, 0, 255, 8),
+          dividerColor: Colors.white),
       debugShowCheckedModeBanner: false,
       home: MainPage(),
     );
@@ -34,7 +38,7 @@ class MainPage extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return HomePage();
+            return ProfilePage();
           } else {
             return LoginPage();
           }
