@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_test/Screen-login/registerScreen.dart';
 import 'package:flutter_application_test/Screen-login/resetScreen.dart';
-import 'package:flutter_application_test/homePage.dart';
+import 'package:flutter_awesome_buttons/flutter_awesome_buttons.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import '../Screen-profile/Profile_Page.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,6 +19,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  final RoundedLoadingButtonController _btnController =
+      RoundedLoadingButtonController();
+
   Future signIn() async {
     try {
       await FirebaseAuth.instance
@@ -25,6 +31,12 @@ class _LoginScreenState extends State<LoginScreen> {
       )
           .then((value) {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
+          Timer(Duration(seconds: 1), () {
+            _btnController.success();
+            Timer(Duration(seconds: 1), () {
+              _btnController.reset();
+            });
+          });
           return ProfilePage();
         }));
       });
@@ -33,6 +45,12 @@ class _LoginScreenState extends State<LoginScreen> {
       showDialog(
           context: context,
           builder: (context) {
+            Timer(Duration(seconds: 1), () {
+              _btnController.error();
+              Timer(Duration(seconds: 1), () {
+                _btnController.reset();
+              });
+            });
             return AlertDialog(
                 content: Stack(children: [
               Text('Please complete the information, OR'),
@@ -58,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
           style: TextStyle(
               color: Colors.white60, fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 5),
+        SizedBox(height: 6),
         Container(
             alignment: Alignment.centerLeft,
             decoration: BoxDecoration(
@@ -95,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
           style: TextStyle(
               color: Colors.white60, fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 5),
+        SizedBox(height: 6),
         Container(
             alignment: Alignment.centerLeft,
             decoration: BoxDecoration(
@@ -126,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget buildForgotPassBtn() {
     return Container(
         alignment: Alignment.centerRight,
-        child: FlatButton(
+        child: TextButton(
           onPressed: () {
             Navigator.push(
               context,
@@ -137,7 +155,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             );
           },
-          padding: EdgeInsets.only(right: 0),
           child: Text(
             'Forgot Password?',
             style: TextStyle(
@@ -150,16 +167,17 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,
-      child: RaisedButton(
-        elevation: 5,
-        onPressed: signIn,
-        padding: EdgeInsets.all(13),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      child: RoundedLoadingButton(
         color: Colors.green,
+        controller: _btnController,
+        onPressed: signIn,
         child: Text(
           'LOGIN',
           style: TextStyle(
-              color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

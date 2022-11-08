@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_test/Screen-Profile/profile_widget.dart';
+import 'package:flutter_application_test/Screen-profile/setting_Profile_page.dart';
 import 'edit_Profile_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -9,10 +11,10 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final user = FirebaseAuth.instance.currentUser!;
+
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
@@ -20,6 +22,16 @@ class _ProfilePageState extends State<ProfilePage> {
         title: Text(
           'Profile',
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return SettingProfilePage();
+              }));
+            },
+          ),
+        ],
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -31,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
           padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
           child: Column(
             children: [
-              const SizedBox(height: 100),
+              SizedBox(height: 100),
               ProfileWidget(
                 imagePath:
                     'https://upload.wikimedia.org/wikipedia/th/thumb/5/5d/Your_Name_poster.jpg/640px-Your_Name_poster.jpg',
@@ -41,21 +53,43 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                 },
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: 30),
+              Text(
+                'Username',
+                style: TextStyle(color: Colors.white, fontSize: 22),
+              ),
+              SizedBox(height: 5),
               Text(
                 user.email!,
                 style: TextStyle(color: Colors.green, fontSize: 16),
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: 15),
               buildNumber(),
-              const SizedBox(height: 30),
+              SizedBox(height: 20),
               buildAbout(),
+              // FutureBuilder(
+              //   future: readUser(),
+              //   builder: (context, snapshot) {
+              //     if (snapshot.hasData) {
+              //       final user = snapshot.data;
+              //       return user == null
+              //           ? Center(child: Text('No User'))
+              //           : buildUser(user);
+              //     } else {
+              //       return Text('Something went wrong!');
+              //     }
+              //   },
+              // ),
             ],
           ),
         ),
       ),
     );
   }
+
+  // Widget buildUser(User user) => ListTile(
+  //     leading: CircleAvatar(child: Text('${user.age}')),
+  //     title: Text(user.name));
 
   Widget buildAbout() {
     return Container(
@@ -117,4 +151,46 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ));
+
+  // Future<User?> readUser() async {
+  //   // Get single document by ID
+  //   final docUser = FirebaseFirestore.instance.collection('users').doc();
+  //   final snapshot = await docUser.get();
+
+  //   if (snapshot.exists) {
+  //     return User.fromJson(snapshot.data()!);
+  //   }
+  // }
 }
+
+// class User {
+//   String id;
+//   final String name;
+//   final String email;
+//   final int age;
+//   final DateTime birthday;
+
+//   User({
+//     this.id = '',
+//     required this.email,
+//     required this.name,
+//     required this.age,
+//     required this.birthday,
+//   });
+
+//   Map<String, dynamic> toJson() => {
+//         'id': id,
+//         'email': email,
+//         'name': name,
+//         'age': age,
+//         'birthday': birthday,
+//       };
+
+//   static User fromJson(Map<String, dynamic> json) => User(
+//         id: json['id'],
+//         email: json['userEmail'],
+//         name: json['userName'],
+//         age: json['userAge'],
+//         birthday: (json['birthday'] as Timestamp).toDate(),
+//       );
+// }

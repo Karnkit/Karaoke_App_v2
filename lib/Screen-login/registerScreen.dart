@@ -1,6 +1,11 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_awesome_buttons/flutter_awesome_buttons.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 import 'loginScreen.dart';
 
@@ -14,6 +19,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmpasswordController = TextEditingController();
+  final _userNameController = TextEditingController();
+  final _userAgeController = TextEditingController();
+
+  final RoundedLoadingButtonController _btnController =
+      RoundedLoadingButtonController();
 
   Future signUp() async {
     try {
@@ -25,15 +35,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
         )
             .then((value) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
+            Timer(Duration(seconds: 1), () {
+              _btnController.success();
+              Timer(Duration(seconds: 1), () {
+                _btnController.reset();
+              });
+            });
             return LoginScreen();
           }));
         });
+
+        addUserDetails(
+          _emailController.text.trim(),
+          _userNameController.text.trim(),
+          int.parse(_userAgeController.text.trim()),
+        );
       }
     } on FirebaseAuthException catch (e) {
       print(e);
       showDialog(
           context: context,
           builder: (context) {
+            Timer(Duration(seconds: 1), () {
+              _btnController.error();
+              Timer(Duration(seconds: 1), () {
+                _btnController.reset();
+              });
+            });
             return AlertDialog(
               content: Stack(children: [
                 Text('Please complete the information, OR'),
@@ -43,6 +71,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
             );
           });
     }
+  }
+
+  Future addUserDetails(
+    String userEmail,
+    String userName,
+    int userAge,
+  ) async {
+    await FirebaseFirestore.instance.collection('users').add({
+      'userEmail': userEmail,
+      'userName': userName,
+      'userAge': userAge,
+    });
   }
 
   bool passwordConfirmed() {
@@ -59,7 +99,82 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmpasswordController.dispose();
+    _userNameController.dispose();
+    _userAgeController.dispose();
     super.dispose();
+  }
+
+  Widget builduserName() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Username',
+          style: TextStyle(
+              color: Colors.white60, fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 6),
+        Container(
+            alignment: Alignment.centerLeft,
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 6,
+                      offset: Offset(0, 2))
+                ]),
+            height: 50,
+            child: TextField(
+              controller: _userNameController,
+              style: TextStyle(color: Colors.black87),
+              decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.only(top: 14),
+                  prefixIcon: Icon(Icons.email, color: Color(0xff999999)),
+                  hintText: 'Username',
+                  hintStyle: TextStyle(color: Colors.black38)),
+            )),
+      ],
+    );
+  }
+
+  Widget builduserAge() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Age',
+          style: TextStyle(
+              color: Colors.white60, fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 6),
+        Container(
+            alignment: Alignment.centerLeft,
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 6,
+                      offset: Offset(0, 2))
+                ]),
+            height: 50,
+            child: TextField(
+              controller: _userAgeController,
+              keyboardType: TextInputType.number,
+              style: TextStyle(color: Colors.black87),
+              decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.only(top: 14),
+                  prefixIcon: Icon(Icons.email, color: Color(0xff999999)),
+                  hintText: 'Age',
+                  hintStyle: TextStyle(color: Colors.black38)),
+            )),
+      ],
+    );
   }
 
   Widget buildEmail() {
@@ -71,7 +186,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           style: TextStyle(
               color: Colors.white60, fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 5),
+        SizedBox(height: 6),
         Container(
             alignment: Alignment.centerLeft,
             decoration: BoxDecoration(
@@ -108,7 +223,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           style: TextStyle(
               color: Colors.white60, fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 5),
+        SizedBox(height: 6),
         Container(
             alignment: Alignment.centerLeft,
             decoration: BoxDecoration(
@@ -145,7 +260,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           style: TextStyle(
               color: Colors.white60, fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 5),
+        SizedBox(height: 6),
         Container(
             alignment: Alignment.centerLeft,
             decoration: BoxDecoration(
@@ -177,16 +292,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,
-      child: RaisedButton(
-        elevation: 5,
+      child: RoundedLoadingButton(
         onPressed: signUp,
-        padding: EdgeInsets.all(13),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         color: Colors.green,
+        controller: _btnController,
         child: Text(
           'REGISTER',
           style: TextStyle(
-              color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
@@ -252,6 +368,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 40),
+                      builduserName(),
+                      SizedBox(height: 10),
+                      builduserAge(),
+                      SizedBox(height: 10),
                       buildEmail(),
                       SizedBox(height: 10),
                       buildPassword(),

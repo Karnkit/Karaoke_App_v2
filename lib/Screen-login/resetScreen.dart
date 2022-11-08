@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_awesome_buttons/flutter_awesome_buttons.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'loginScreen.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -12,6 +15,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   // text controllers
   final _emailController = TextEditingController();
 
+  final RoundedLoadingButtonController _btnController =
+      RoundedLoadingButtonController();
+
   Future passwordReset() async {
     try {
       await FirebaseAuth.instance
@@ -20,6 +26,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return LoginScreen();
         }));
+      });
+      Timer(Duration(seconds: 1), () {
+        _btnController.success();
+        Timer(Duration(seconds: 1), () {
+          _btnController.reset();
+        });
       });
       showDialog(
           context: context,
@@ -41,6 +53,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               Text('\nThis email is invalid !'),
             ]));
           });
+      Timer(Duration(seconds: 1), () {
+        _btnController.error();
+        Timer(Duration(seconds: 1), () {
+          _btnController.reset();
+        });
+      });
     }
   }
 
@@ -83,7 +101,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           style: TextStyle(
               color: Colors.white60, fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 5),
+        SizedBox(height: 6),
         Container(
             alignment: Alignment.centerLeft,
             decoration: BoxDecoration(
@@ -115,16 +133,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,
-      child: RaisedButton(
-        elevation: 5,
-        onPressed: passwordReset,
-        padding: EdgeInsets.all(13),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      child: RoundedLoadingButton(
         color: Colors.green,
+        controller: _btnController,
+        onPressed: passwordReset,
         child: Text(
-          'Send',
+          'SEND',
           style: TextStyle(
-              color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

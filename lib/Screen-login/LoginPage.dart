@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_awesome_buttons/flutter_awesome_buttons.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 import 'loginScreen.dart';
 import 'registerScreen.dart';
@@ -10,6 +14,35 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final RoundedLoadingButtonController _btnController1 =
+      RoundedLoadingButtonController();
+  final RoundedLoadingButtonController _btnController2 =
+      RoundedLoadingButtonController();
+
+  Future loginPage() async {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      Timer(Duration(seconds: 1), () {
+        _btnController1.success();
+        Timer(Duration(seconds: 1), () {
+          _btnController1.reset();
+        });
+      });
+      return LoginScreen();
+    }));
+  }
+
+  Future registerPage() async {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      Timer(Duration(seconds: 1), () {
+        _btnController2.success();
+        Timer(Duration(seconds: 1), () {
+          _btnController2.reset();
+        });
+      });
+      return RegisterScreen();
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,20 +96,17 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,
-      child: RaisedButton(
-        elevation: 5,
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return LoginScreen();
-          }));
-        },
-        padding: EdgeInsets.all(12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      child: RoundedLoadingButton(
+        onPressed: loginPage,
         color: Colors.green,
+        controller: _btnController1,
         child: Text(
           'LOGIN',
           style: TextStyle(
-              color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
@@ -86,20 +116,17 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,
-      child: RaisedButton(
-        elevation: 5,
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return RegisterScreen();
-          }));
-        },
-        padding: EdgeInsets.all(12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      child: RoundedLoadingButton(
+        onPressed: registerPage,
         color: Colors.green,
+        controller: _btnController2,
         child: Text(
           'REGISTER',
           style: TextStyle(
-              color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

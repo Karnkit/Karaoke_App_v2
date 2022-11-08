@@ -1,23 +1,33 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_test/Screen-login/LoginPage.dart';
 import 'package:flutter_awesome_buttons/flutter_awesome_buttons.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-import 'Screen-profile/Profile_Page.dart';
-
-class HomePage extends StatefulWidget {
+class SettingProfilePage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _SettingProfilePageState createState() => _SettingProfilePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _SettingProfilePageState extends State<SettingProfilePage> {
   final user = FirebaseAuth.instance.currentUser!;
+
+  final RoundedLoadingButtonController _btnController =
+      RoundedLoadingButtonController();
 
   Future signOut() async {
     await FirebaseAuth.instance.signOut();
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return LoginPage();
     }));
+    Timer(Duration(seconds: 1), () {
+      _btnController.error();
+      Timer(Duration(seconds: 1), () {
+        _btnController.reset();
+      });
+    });
   }
 
   @override
@@ -40,9 +50,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 100),
-              bulidgotoprofileBtn(),
-              SizedBox(height: 20),
+              SizedBox(height: 1000),
               bulidSignoutBtn(),
             ],
           ),
@@ -51,30 +59,22 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget bulidgotoprofileBtn() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10),
-      width: double.infinity,
-      child: RoundedButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => ProfilePage()),
-          );
-        },
-        title: 'Go To Profile Page',
-        buttonColor: Colors.green,
-      ),
-    );
-  }
-
   Widget bulidSignoutBtn() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,
-      child: RoundedButton(
+      child: RoundedLoadingButton(
+        color: Colors.redAccent,
+        controller: _btnController,
         onPressed: signOut,
-        title: 'SIGNOUT',
-        buttonColor: Colors.red,
+        child: Text(
+          'LOGOUT',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
