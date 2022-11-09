@@ -34,15 +34,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
           password: _passwordController.text.trim(),
         )
             .then((value) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
+          Timer(Duration(seconds: 1), () {
+            _btnController.success();
             Timer(Duration(seconds: 1), () {
-              _btnController.success();
-              Timer(Duration(seconds: 1), () {
-                _btnController.reset();
-              });
+              _btnController.reset();
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return LoginScreen();
+              }));
             });
-            return LoginScreen();
-          }));
+          });
         });
 
         addUserDetails(

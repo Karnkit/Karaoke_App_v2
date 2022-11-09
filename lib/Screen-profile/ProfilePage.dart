@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +14,44 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final user = FirebaseAuth.instance.currentUser!;
+  final userData = FirebaseFirestore.instance.collection('users');
+
+  get data => FirebaseFirestore.instance.collection('users').get();
+
+  Future getDocId() async {
+    await FirebaseFirestore.instance.collection('users').get().then(
+          (snapshot) => snapshot.docs.forEach((document) {
+            print(document.reference);
+          }),
+        );
+  }
+
+  Widget buildUser(BuildContext context) {
+// get the collection
+    CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+    return FutureBuilder<DocumentSnapshot>(
+      builder: ((context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+          return Text('${data['userName']}' +
+              '\t' +
+              '${data['userAge']}' +
+              '\t' +
+              '${data['userEmail']}');
+        }
+        return Text('loading...');
+      }),
+    );
+  }
 
   @override
+  void initState() {
+    getDocId();
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -67,6 +105,10 @@ class _ProfilePageState extends State<ProfilePage> {
               buildNumber(),
               SizedBox(height: 20),
               buildAbout(),
+              Text(
+                '${data['userName']}',
+                style: TextStyle(color: Colors.green, fontSize: 16),
+              ),
             ],
           ),
         ),

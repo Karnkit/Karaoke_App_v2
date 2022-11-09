@@ -22,17 +22,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     try {
       await FirebaseAuth.instance
           .sendPasswordResetEmail(email: _emailController.text.trim())
-          .then((value) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return LoginScreen();
-        }));
-      });
-      Timer(Duration(seconds: 1), () {
-        _btnController.success();
-        Timer(Duration(seconds: 1), () {
-          _btnController.reset();
-        });
-      });
+          .then((value) {});
       showDialog(
           context: context,
           builder: (context) {
@@ -42,6 +32,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               Text('\nPlease check your email'),
             ]));
           });
+      Timer(Duration(seconds: 1), () {
+        _btnController.success();
+        Timer(Duration(seconds: 1), () {
+          _btnController.reset();
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return LoginScreen();
+          }));
+        });
+      });
     } on FirebaseAuthException catch (e) {
       print(e);
       showDialog(

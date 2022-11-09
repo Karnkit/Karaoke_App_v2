@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_test/Screen-login/registerScreen.dart';
 import 'package:flutter_application_test/Screen-login/resetScreen.dart';
-import 'package:flutter_awesome_buttons/flutter_awesome_buttons.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import '../Screen-profile/Profile_Page.dart';
+import '../Screen-profile/testpage.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -30,15 +30,12 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text.trim(),
       )
           .then((value) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          Timer(Duration(seconds: 1), () {
-            _btnController.success();
-            Timer(Duration(seconds: 1), () {
-              _btnController.reset();
-            });
-          });
-          return ProfilePage();
-        }));
+        Timer(Duration(seconds: 1), () {
+          _btnController.reset();
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return ProfilePage();
+          }));
+        });
       });
     } on FirebaseAuthException catch (e) {
       print(e);

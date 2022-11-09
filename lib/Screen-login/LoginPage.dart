@@ -1,10 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_awesome_buttons/flutter_awesome_buttons.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-
 import 'loginScreen.dart';
 import 'registerScreen.dart';
 
@@ -20,27 +18,21 @@ class _LoginPageState extends State<LoginPage> {
       RoundedLoadingButtonController();
 
   Future loginPage() async {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      Timer(Duration(seconds: 1), () {
-        _btnController1.success();
-        Timer(Duration(seconds: 1), () {
-          _btnController1.reset();
-        });
-      });
-      return LoginScreen();
-    }));
+    Timer(Duration(seconds: 1), () {
+      _btnController1.reset();
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return LoginScreen();
+      }));
+    });
   }
 
   Future registerPage() async {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      Timer(Duration(seconds: 1), () {
-        _btnController2.success();
-        Timer(Duration(seconds: 1), () {
-          _btnController2.reset();
-        });
-      });
-      return RegisterScreen();
-    }));
+    Timer(Duration(seconds: 1), () {
+      _btnController2.reset();
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return RegisterScreen();
+      }));
+    });
   }
 
   @override
@@ -117,6 +109,7 @@ class _LoginPageState extends State<LoginPage> {
       padding: EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,
       child: RoundedLoadingButton(
+        valueColor: Colors.white,
         onPressed: registerPage,
         color: Colors.green,
         controller: _btnController2,
